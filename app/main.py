@@ -18,7 +18,10 @@ def get_clean_data():
 
     data["never"] = data.apply(lambda row: row["never"] + row["ever"], axis=1)
     data.drop(["ever"], axis=1, inplace=True)
-    data = data.rename(columns={"not current": "not_current"})
+    
+    data = data.rename(columns={'not current': 'not_current'})
+    data["former"] = data["not_current"] + data["former"]
+    data.drop(['not_current'], axis=1, inplace=True)
 
     data = data.dropna()
 
