@@ -54,7 +54,6 @@ def add_sidebar():
         ("Current Smoker", "current"),
         ("Former Smoker", "former"),
         ("Never a Smoker", "never"),
-        ("Not a current Smoker", "not_current"),
     ]
 
     # slider_style = {"background": "#ECECEC", "handle_color": "#FCA503"}
@@ -67,7 +66,6 @@ def add_sidebar():
         "current",
         "former",
         "never",
-        "not_current",
     ]
 
     for label, key in slider_labels:
@@ -121,7 +119,6 @@ def get_radar_chart(input_data):
         "Current Smoker",
         "Former Smoker",
         "Never a Smoker",
-        "Not a current Smoker",
     ]
 
     fig = go.Figure()
@@ -139,7 +136,6 @@ def get_radar_chart(input_data):
                 input_data["current"],
                 input_data["former"],
                 input_data["never"],
-                input_data["not_current"],
             ],
             theta=categories,
             fill="toself",
