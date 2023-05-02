@@ -201,7 +201,7 @@ def main():
     with st.container():
         st.title("Patient Diabetes Predictor")
         st.write(
-            "Please connect this app to your medical lab to help diagnose diabetes form your patient information. This app predicts using a machine learning model whether a patient is diabetes positive or negative based on the measurements it receives from your medical lab. You can also update the measurements by hand using the sliders in the sidebar. "
+            "The diabetes prediction tool employs a gradient boosting classifier to determine the probability of a patient having diabetes based on various input parameters and was built using Streamlit. It is important to note that while the tool can assist in making a diagnosis, it should not be considered a substitute for a professional medical diagnosis. Patients should always consult with a healthcare professional for a comprehensive diagnosis and personalized treatment plan."
         )
 
     col1, col2 = st.columns([4, 1])
