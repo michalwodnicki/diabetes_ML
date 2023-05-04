@@ -201,7 +201,7 @@ def main():
     with st.container():
         st.title("Patient Diabetes Predictor")
         st.write(
-            "The diabetes prediction tool employs a gradient boosting classifier to determine the probability of a patient having diabetes based on various input parameters and was built using Streamlit. It is important to note that while the tool can assist in making a diagnosis, it should not be considered a substitute for a professional medical diagnosis. Patients should always consult with a healthcare professional for a comprehensive diagnosis and personalized treatment plan."
+            "The diabetes prediction tool employs a gradient boosting classifier to determine the probability of a patient having diabetes based on various input parameters. It is important to note that while the tool can assist in making a diagnosis, it should not be considered a substitute for a professional medical diagnosis. Patients should always consult with a healthcare professional for a comprehensive diagnosis and personalized treatment plan."
         )
 
     col1, col2 = st.columns([4, 1])
@@ -211,6 +211,8 @@ def main():
         st.plotly_chart(radar_chart)
     with col2:
         add_predictions(input_data)
+
+    st.caption('Checkout the data [here](https://www.kaggle.com/datasets/iammustafatz/diabetes-prediction-dataset)!')
 
 
 if __name__ == "__main__":
