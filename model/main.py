@@ -3,46 +3,71 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import IsolationForest
-from sklearn.metrics import accuracy_score, classification_report, f1_score
+from sklearn.metrics import accuracy_score, mean_absolute_error
 import pickle5 as pickle
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.calibration import calibration_curve
 
 
-def create_model(data):
-    X = data.drop(["diabetes"], axis=1)
-    y = data["diabetes"]
-
-    # scale the data
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
-
-    # split the data
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.20, random_state=420
+def create_model(data): 
+  X = data.drop(['diabetes'], axis=1)
+  y = data['diabetes']
+  
+  # scale the data
+  scaler = StandardScaler()
+  X = scaler.fit_transform(X)
+  
+  # split the data 80/10/10 train/validation/test
+  X_train_val, X_test, y_train_val, y_test = train_test_split(
+    X, y, test_size=0.1, random_state=16, stratify=y
     )
 
-    # train the model
+  X_train, X_val, y_train, y_val = train_test_split(
+    X_train_val, y_train_val, test_size=0.1111, random_state=16, stratify=y_train_val
+    )
+  
+  # train and fit the gbx model
 
-    params = {
-        "n_estimators": 100,
-        "max_depth": 3,
-        "learning_rate": 0.1,
-        "random_state": 420,
-    }
+  params = {
+    'n_estimators': 100,
+    'max_depth': 3,
+    'learning_rate': 0.1,
+    'random_state': 420
+  }
 
-    model = GradientBoostingClassifier(**params)
-    model.fit(X_train, y_train)
+  clf = GradientBoostingClassifier(**params)
+  clf.fit(X_train, y_train)
 
-    # test model
+  # test the gbx model
+  y_pred = clf.predict(X_val)
 
-    y_pred = model.predict(X_test)
+  acc = accuracy_score(y_val, y_pred)
 
-    f1 = f1_score(y_test, y_pred)
-    print("F1 score:", f1)
+  prob_pos = clf.predict_proba(X_test)[:, 1]
+  fraction_of_positives, mean_predicted_value = calibration_curve(y_test, prob_pos, n_bins=10)
+  uncalibrated_mae = mean_absolute_error(fraction_of_positives, mean_predicted_value)
 
-    print("Accuracy of our model: ", accuracy_score(y_test, y_pred))
-    print("Classification report: \n", classification_report(y_test, y_pred))
+  print(f"Validation Accuracy: {acc:.3f}")
+  print(f"Validation Calibration Curve MAE: {uncalibrated_mae:.3f}")
 
-    return model, scaler
+  # train and fit calibration model
+
+  calibrated_model = CalibratedClassifierCV(clf, cv='prefit', method ='isotonic')
+  calibrated_model.fit(X_val, y_val)
+  
+  # test the calibration model
+  y_pred_calibrated = calibrated_model.predict(X_test)
+
+  acc_calibrated = accuracy_score(y_test, y_pred_calibrated)
+
+  prob_pos_calibrated = calibrated_model.predict_proba(X_test)[:, 1]
+  fraction_of_positives_calibrated, mean_predicted_value_calibrated = calibration_curve(y_test, prob_pos_calibrated, n_bins=10)
+  calibrated_mae = mean_absolute_error(fraction_of_positives_calibrated, mean_predicted_value_calibrated)
+
+  print(f"Test Accuracy: {acc_calibrated:.3f}")
+  print(f"Test Calibration Curve MAE Score: {calibrated_mae:.3f}")
+
+  return calibrated_model, scaler
 
 
 def get_clean_data():
