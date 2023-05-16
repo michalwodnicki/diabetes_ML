@@ -97,13 +97,12 @@ def get_scaled_values(input_dict):
     scaled_dict = {}
 
     for key, value in input_dict.items():
-        if isinstance(value, np.ndarray) and value.dtype == np.bool:
-            scaled_dict[key] = value
-        else:
-            max_val = X[key].max()
-            min_val = X[key].min()
-            scaled_value = (value - min_val) / (max_val - min_val)
-            scaled_dict[key] = scaled_value
+        max_val = X[key].max()
+        min_val = X[key].min()
+        scaled_value = (value - min_val) / (max_val - min_val)
+        scaled_dict[key] = scaled_value
+
+    return scaled_dict
 
 
 def get_radar_chart(input_data):
@@ -197,7 +196,7 @@ def main():
     with open("assets/style.css") as f:
         st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
 
-    input_data = add_sidebar()
+    input_dict = add_sidebar()
 
     with st.container():
         st.title("Patient Diabetes Predictor")
@@ -208,10 +207,10 @@ def main():
     col1, col2 = st.columns([4, 1])
 
     with col1:
-        radar_chart = get_radar_chart(input_data)
+        radar_chart = get_radar_chart(input_dict)
         st.plotly_chart(radar_chart)
     with col2:
-        add_predictions(input_data)
+        add_predictions(input_dict)
 
     st.caption('Checkout the data [here](https://www.kaggle.com/datasets/iammustafatz/diabetes-prediction-dataset)!')
 
